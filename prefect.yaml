@@ -1,0 +1,17 @@
+name: crypto-lakehouse-prefect
+prefect-version: 2.20.25
+
+build: []
+push: []
+pull: []
+
+deployments:
+  - name: batch-prod
+    entrypoint: orchestration/batch_flow.py:run_batch_pipeline
+    work_pool:
+      name: default-pool
+      job_variables:
+        working_directory: /app
+    schedules:
+      - cron: "0 */2 * * *"
+        timezone: "Asia/Ho_Chi_Minh"

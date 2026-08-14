@@ -1,0 +1,14 @@
+.git
+.venv
+infra/minio_data
+infra/minio_data/**
+infra/workspace
+infra/workspace/**
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+*.log

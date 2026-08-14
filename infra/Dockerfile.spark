@@ -1,0 +1,48 @@
+FROM python:3.10-slim
+
+# Ngăn python tạo file bytecode dư thừa
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV SPARK_LOCAL_HOSTNAME=localhost
+ENV SPARK_LOCAL_IP=127.0.0.1
+
+# Cài đặt Java 17 (Bắt buộc cho Spark) và công cụ
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends default-jre procps curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Thiết lập biến Java
+ENV JAVA_HOME="/usr/lib/jvm/default-java"
+
+# Cài đặt PySpark và các công cụ Python
+RUN pip install --no-cache-dir \
+    pyspark==4.1.1 \
+    delta-spark==4.1.0 \
+    minio==7.2.5 \
+    websocket-client==1.7.0 \
+    confluent-kafka==2.3.0 \
+    findspark \
+    flask>=2.3.0 \
+    flask-cors>=4.0.0 \
+    pandas>=2.0.0 \
+    trino>=0.329.0 \
+    prefect==2.20.25 \
+    docker==7.1.0
+
+WORKDIR /app
+
+# Pre-download tất cả Maven JARs khi build image
+# để container không cần tải lại khi khởi động (tiết kiệm 3-5 phút mỗi lần start)
+RUN python -c "\
+from pyspark.sql import SparkSession; \
+spark = SparkSession.builder \
+    .config('spark.jars.packages', \
+        'org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.1,' \
+        'io.delta:delta-spark_2.13:4.1.0,' \
+        'org.apache.hadoop:hadoop-aws:3.4.2,' \
+        'software.amazon.awssdk:bundle:2.29.52') \
+    .config('spark.sql.extensions', 'io.delta.sql.DeltaSparkSessionExtension') \
+    .config('spark.sql.catalog.spark_catalog', 'org.apache.spark.sql.delta.catalog.DeltaCatalog') \
+    .getOrCreate(); \
+spark.stop(); \
+print('==> All Maven JARs pre-downloaded successfully')"
