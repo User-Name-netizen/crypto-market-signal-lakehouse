@@ -349,6 +349,7 @@ Sau đó kết nối Trino với DBeaver để truy vấn Gold layer bằng SQL.
 - Độ trễ từ lúc có giao dịch trên Binance đến khi phản ánh trên Bronze: theo thời gian thực (giây).
 - Schema Evolution hoạt động ổn định khi hợp nhất dữ liệu CSV và JSON stream trong cùng một bảng.
 - Dashboard Power BI phản ánh trực tiếp 3 nhóm tín hiệu: Net Flow, VWAP, Whale Alert.
+-   ![Power BI Dashboard](doc/images/dashboard-overview.png)
 
 ---
 
